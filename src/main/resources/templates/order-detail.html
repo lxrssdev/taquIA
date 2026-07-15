@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taquia · Tu pedido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/detailStyle.css}">
+</head>
+<body>
+
+<div class="wrap">
+    <header>
+        <a class="back-link" href="/menu" th:href="@{/menu}">&larr; Menú</a>
+        <div class="chalk-frame">
+            <h1>Tu pedido</h1>
+        </div>
+    </header>
+
+    <!-- Thymeleaf: "cart" es el objeto cartView agregado en el modelo -->
+    <main class="cart-list" th:if="${cart != null and !#lists.isEmpty(cart)}">
+
+        <div class="cart-item" th:each="item : ${cart}">
+            <div class="item-info">
+                <div class="item-name" th:text="${item.name}">Taco</div>
+                <div class="item-unit-price">$<span th:text="${item.price}">10</span> c/u</div>
+            </div>
+
+            <div class="item-observation">
+                <input type="text"
+                       class="obs-input"
+                       th:attr="data-product-id=${item.productId}"
+                       th:value="${item.observations}"
+                       placeholder="Ej: sin cebolla, extra salsa"
+                       onchange="updateObservation(this.dataset.productId, this.value)">
+            </div>
+            <br>
+
+            <div class="item-controls">
+                <div class="stepper">
+                    <button type="button" class="minus" th:onclick="'changeQty(' + ${item.productId} + ', -1)'">−</button>
+                    <span class="qty" th:text="${item.quantity}">1</span>
+                    <button type="button" class="plus" th:onclick="'changeQty(' + ${item.productId} + ', 1)'">+</button>
+                </div>
+                <div class="item-subtotal">$<span th:text="${item.subtotal}">10</span></div>
+            </div>
+
+            <button type="button" class="remove-btn" th:onclick="'removeItem(' + ${item.productId} + ')'">Quitar</button>
+        </div>
+
+    </main>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" th:if="${cart == null or #lists.isEmpty(cart)}">
+        <p>Tu pedido está vacío...</p>
+        <a class="empty-cta" href="/menu" th:href="@{/menu}">Ver el menú</a>
+    </div>
+
+    <section class="summary" th:if="${cart != null and !#lists.isEmpty(cart)}">
+        <div class="summary-row">
+            <span>Total</span>
+            <span>$<span th:text="${total}">30</span></span>
+        </div>
+    </section>
+</div>
+
+<div class="bottom-bar" th:if="${cart != null and !#lists.isEmpty(cart)}">
+    <button type="button" class="btn btn-detail" onclick="seguirPidiendo()">Seguir pidiendo</button>
+    <button type="button" class="btn btn-order" onclick="confirmarPedido()">Confirmar pedido</button>
+</div>
+
+<script th:src="@{/js/order-detail.js}"></script>
+
+</body>
+</html>

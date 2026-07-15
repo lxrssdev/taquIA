@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taquia · Menú</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/homeStyle.css}">
+</head>
+<body>
+
+<div class="wrap">
+    <header>
+        <div class="chalk-frame">
+            <h1>TaquIA</h1>
+        </div>
+    </header>
+    <p class="subtitle">Menú del día</p>
+
+    <main class="menu-list" id="menuList">
+
+        <!-- Thymeleaf: itera sobre la lista "products" que llega del controlador -->
+        <div class="menu-item" th:each="product : ${products}" th:attr="data-product-id=${product.id}">
+            <div class="item-top">
+                <div>
+                    <div class="item-name" th:text="${product.name}">Taco</div>
+                    <!-- <div class="item-desc" th:if="${product.description}" th:text="${product.description}">Descripción del producto</div> -->
+                </div>
+                <div class="item-price">$<span th:text="${product.price}">10</span></div>
+            </div>
+            <div class="item-row-bottom">
+                <button type="button" class="add-btn" th:onclick="'addToOrder(this, ' + ${product.id} + ')'">Add</button>
+                <div class="stepper">
+                    <button type="button" class="minus" onclick="changeQty(this, -1)">−</button>
+                    <span class="qty">1</span>
+                    <button type="button" class="plus" onclick="changeQty(this, 1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado vacío si la lista de productos llega vacía -->
+        <div class="empty-state" th:if="${#lists.isEmpty(products)}">
+            Todavía no hay tacos en el menú...
+        </div>
+
+    </main>
+</div>
+
+<div class="bottom-bar">
+    <a class="btn btn-detail" onclick="saveCart()">Ver detalle</a>
+    <a th:href="@{/order-complete}" class="btn btn-order">
+        Ordenar
+        <span class="count" id="orderCount" th:text="'(' + ${orderCount ?: 0} + ')'">(0)</span>
+    </a>
+</div>
+
+<script th:inline="javascript">
+    // Estado simple del pedido en el cliente. En producción esto se
+    // sincronizaría con el backend (ej. POST /order/items) vía fetch.
+    const order = {};
+
+    function addToOrder(btn, productId){
+        const row = btn.closest('.item-row-bottom');
+        const stepper = row.querySelector('.stepper');
+        btn.classList.add('hidden');
+        stepper.classList.add('active');
+        stepper.querySelector('.qty').textContent = '1';
+        order[productId] = 1;
+        updateOrderCount();
+    }
+
+    function changeQty(btn, delta){
+        const row = btn.closest('.item-row-bottom');
+        const stepper = row.querySelector('.stepper');
+        const qtyEl = stepper.querySelector('.qty');
+        const addBtn = row.querySelector('.add-btn');
+        const productId = row.closest('.menu-item').getAttribute('data-product-id');
+
+        let qty = parseInt(qtyEl.textContent, 10) + delta;
+
+        if(qty <= 0){
+            stepper.classList.remove('active');
+            addBtn.classList.remove('hidden');
+            delete order[productId];
+        } else {
+            qtyEl.textContent = qty;
+            order[productId] = qty;
+        }
+        updateOrderCount();
+    }
+
+    function updateOrderCount(){
+        const total = Object.values(order).reduce((a, b) => a + b, 0);
+        document.getElementById('orderCount').textContent = '(' + total + ')';
+    }
+
+    async function saveCart() {
+        const cartItems = [];
+        for (const productId in order) {
+            cartItems.push({
+                productId: Number(productId),
+                quantity: order[productId],
+                observations: ""
+            })
+            console.log(order[productId]);
+        }
+        const response = await fetch("/order-detail", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(cartItems)
+        });
+
+        if (response.ok) {
+            window.location.href = "/order-details";
+        }else{
+            alert("Ocurrio un error al guardar el carrito!")
+        }
+    }
+
+</script>
+
+</body>
+</html>
