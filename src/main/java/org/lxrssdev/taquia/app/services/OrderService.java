@@ -30,19 +30,6 @@ public class OrderService {
 
     @Transactional
     public Order confirmOrder(HttpSession session){
-        /*
-        * Obtener carrito
-        * Verificar que no este vacio
-        * Obtener la mesa (1 temporalmente)
-        * Crear el order
-        * Guardar el order
-        * Recorrer el carro
-        * Buscar product
-        * Crear orderDetail
-        * Guardar order detail
-        * Vaciar carrito
-        * Regresar el order creado
-        * */
         List<CartItemDTO> cart = cartService.getCart(session);
         if(cart.isEmpty()){
             throw new EmptyCartException("El carrito esta vacio!");
@@ -68,4 +55,9 @@ public class OrderService {
         cartService.clear(session);
         return order;
     }
+
+    public List<Order> findPendingOrders(){
+        return orderRepository.findByStatus(PENDING);
+    }
+
 }
