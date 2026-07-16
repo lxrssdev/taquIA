@@ -24,7 +24,7 @@ public class RestaurantTableService {
     }
 
     public RestaurantTable findByTableNumber(Integer tableNumber){
-        return restaurantTableRepository.findByTableNumber(tableNumber)
+        return restaurantTableRepository.findByNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Mesa inexistente!"));
     }
 

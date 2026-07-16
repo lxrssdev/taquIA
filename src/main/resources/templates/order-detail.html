@@ -66,6 +66,8 @@
     </section>
 </div>
 
+<form id="confirmForm" action="/order/confirm" method="post" style="display: none;"></form>
+
 <div class="bottom-bar" th:if="${cart != null and !#lists.isEmpty(cart)}">
     <button type="button" class="btn btn-detail" onclick="seguirPidiendo()">Seguir pidiendo</button>
     <button type="button" class="btn btn-order" onclick="confirmarPedido()">Confirmar pedido</button>

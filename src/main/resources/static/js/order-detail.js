@@ -28,5 +28,5 @@ function seguirPidiendo(){
 }
 
 function confirmarPedido(){
-    window.location.href = '/order/confirm';
+    document.getElementById('confirmForm').submit();
 }
