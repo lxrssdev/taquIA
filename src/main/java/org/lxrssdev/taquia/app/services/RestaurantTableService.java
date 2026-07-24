@@ -7,6 +7,7 @@ import org.lxrssdev.taquia.app.repositories.RestaurantTableRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +28,11 @@ public class RestaurantTableService {
         return restaurantTableRepository.findByNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Mesa inexistente!"));
     }
+
+    public List<RestaurantTable> findByIsAvailable(boolean available){
+        return restaurantTableRepository.findByAvailable(available);
+    }
+
 
     public RestaurantTable save(RestaurantTable table){
         return restaurantTableRepository.save(table);

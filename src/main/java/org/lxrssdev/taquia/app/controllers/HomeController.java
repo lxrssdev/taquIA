@@ -52,6 +52,7 @@ public class HomeController {
             cartViewDto.setPrice(product.getPrice());
             cartViewDto.setQuantity(item.getQuantity());
             cartViewDto.setObservations(item.getObservations());
+            System.out.printf("Observaciones: %s", item.getObservations());
             //calculamos el subtotal
             subTotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             cartViewDto.setSubtotal(subTotal);
