@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taquia · Historial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/historyStyle.css}">
+</head>
+<body>
+
+<div class="wrap">
+    <div class="card">
+        <h1>Historial</h1>
+
+        <div class="order-list" th:if="${historyOrders != null and !#lists.isEmpty(historyOrders)}">
+
+            <div class="order-block" th:each="order : ${historyOrders}">
+                <div class="order-line order-id">Pedido #<span th:text="${order.id}">10</span></div>
+                <div class="order-line table">Mesa <span th:text="${order.restaurantTable.number}">2</span></div>
+                <div class="order-line status"
+                     th:classappend="${order.status.name() == 'DELIVERED'} ? 'delivered' : 'cancelled'"
+                     th:text="${order.status.name() == 'DELIVERED'} ? 'Entregado' : 'Pendiente o en preparacion'">
+                    Entregado
+                </div>
+            </div>
+
+        </div>
+
+        <div class="empty-state" th:if="${historyOrders == null or #lists.isEmpty(historyOrders)}">
+            Aún no hay pedidos en el historial...
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

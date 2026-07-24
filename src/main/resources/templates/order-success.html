@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taquia · Pedido confirmado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/successStyle.css}">
+</head>
+<body>
+
+<div class="wrap">
+    <div class="success-card">
+
+        <div class="success-header">
+            <span class="check-icon">&#10003;</span>
+            <h1>Pedido confirmado</h1>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Pedido</span>
+            <span class="value">#<span th:text="${orderId}">15</span></span>
+        </div>
+
+        <div class="detail-row" th:if="${tableNumber != null}">
+            <span class="label">Mesa</span>
+            <span class="value" th:text="${tableNumber}">1</span>
+        </div>
+
+        <div class="detail-row estimate">
+            <span class="label">Tiempo estimado</span>
+            <span th:text="${estimatedTime} ? |${estimatedTime} minutos| : '15-20 minutos'"></span>
+        </div>
+
+        <a class="back-btn" href="/menu" th:href="@{/menu}">Volver al menú</a>
+
+    </div>
+</div>
+
+</body>
+</html>

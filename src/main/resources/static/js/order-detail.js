@@ -9,7 +9,7 @@ function updateObservation(productId, observationText){
     const body = new URLSearchParams();
     body.append('observation', observationText);
 
-    fetch('/cart/items/' + productId + '/update-observations', {
+    fetch('/cart/items/' + productId + '/observations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body

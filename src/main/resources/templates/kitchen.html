@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taquia · Cocina</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/kitchenStyle.css}">
+</head>
+<body>
+
+<div class="wrap">
+    <div class="columns">
+
+        <section class="column">
+            <h1>Órdenes pendientes</h1>
+
+            <div class="order-list" th:if="${orders != null and !#lists.isEmpty(orders)}">
+
+                <div class="order-block" th:each="order : ${orders}">
+                    <div class="divider">------------------------------</div>
+
+                    <div class="order-line order-id">Pedido #<span th:text="${order.id}">15</span></div>
+                    <div class="order-line table">Mesa <span th:text="${order.restaurantTable.number}">1</span></div>
+                    <div class="order-line time"
+                         th:text="${#temporals.format(order.createdAt, 'HH:mm')}">
+                    </div>
+
+                    <!--<div class="order-line count"><span th:text="${order.products}">2</span> productos</div>-->
+                    <a class="detail-link" th:href="@{/kitchen/orders/{id}(id=${order.id})}">[Ver detalle]</a>
+                </div>
+
+                <div class="divider closing">------------------------------</div>
+            </div>
+
+            <div class="empty-state" th:if="${orders == null or #lists.isEmpty(orders)}">
+                No hay órdenes pendientes...
+            </div>
+        </section>
+
+        <section class="column">
+            <h1>En preparación</h1>
+
+            <div class="order-list" th:if="${preparingOrders != null and !#lists.isEmpty(preparingOrders)}">
+
+                <div class="order-block" th:each="order : ${preparingOrders}">
+                    <div class="divider">------------------------------</div>
+
+                    <div class="order-line order-id">Pedido #<span th:text="${order.id}">16</span></div>
+                    <div class="order-line table">Mesa <span th:text="${order.restaurantTable.number}">3</span></div>
+                    <div class="order-line time"
+                         th:text="${#temporals.format(order.createdAt,'HH:mm')}">
+                    </div>
+
+                    <!--<div class="order-line count"><span th:text="${order.products}">5</span> productos</div>-->
+                    <div class="action-row">
+                        <a class="detail-link" th:href="@{/kitchen/orders/{id}(id=${order.id})}">[Ver detalle]</a>
+                        <button type="button"
+                                class="finish-btn"
+                                th:attr="data-order-id=${order.id}"
+                                onclick="terminarPedido(this)">[Terminar pedido]</button>
+                    </div>
+                </div>
+
+                <div class="divider closing">------------------------------</div>
+            </div>
+
+            <div class="empty-state" th:if="${preparingOrders == null or #lists.isEmpty(preparingOrders)}">
+                No hay órdenes en preparación...
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function terminarPedido(btn){
+        const orderId = btn.getAttribute('data-order-id');
+
+        btn.disabled = true;
+        btn.textContent = '[Terminando...]';
+
+        fetch('/kitchen/orders/' + orderId + '/ready', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'READY' })
+        })
+            .then(res => {
+                if(res.ok){
+                    window.location.reload();
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = '[Terminar pedido]';
+                    alert('No se pudo actualizar el estado del pedido');
+                }
+            })
+            .catch(err => {
+                console.error('Error al terminar el pedido', err);
+                btn.disabled = false;
+                btn.textContent = '[Terminar pedido]';
+                alert('No se pudo actualizar el estado del pedido');
+            });
+    }
+</script>
+
+</body>
+</html>
